@@ -3,21 +3,7 @@
  <head>
   <title>Ejercicio con WebWorkers</title>
 
-  <script>
-function buscarPrimos() {
-  var n = 1;
-  primelist = "";
-  search: while (n<parseInt(document.getElementById("formulario").input.value)) {
-    n += 1;
-    for (var i = 2; i <= Math.sqrt(n); i += 1)
-      if (n % i == 0)
-        continue search;
-    // found a prime!
-    primelist += " " + n;
-    document.getElementById('result').innerHTML = primelist;
-  }
-}
-  </script>
+
 
 
  </head>
@@ -28,6 +14,29 @@ function buscarPrimos() {
   <button onclick="buscarPrimos()">Buscar primos</button>
   <p>Los numeros primos hasta el numero dado son: <span id="result"></span></p>
 
+  <script>
+  var w;
+  if (typeof(Worker)!=="undefined"){
+    if(typeof(w)=="undefined"){
+      w = new Worker("primos.js");
+    }
+
+  }else{
+    alert("Tu navegador no soporta Workers");
+  }
+
+  function buscarPrimos(){
+      w.postMessage(document.getElementById("formulario").input.value);
+  }
+
+  var primelist="";
+  w.addEventListener('message', function(e) {
+    primelist += " " + e.data;
+
+    document.getElementById('result').innerHTML =primelist;
+  }, false);
+
+  </script>
 
  </body>
 </html>
